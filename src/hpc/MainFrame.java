@@ -12,8 +12,10 @@ package hpc;
 
 import image.Background;
 import image.ImageHelper;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.List;
+import javax.swing.JTextArea;
+import javax.swing.SwingWorker;
 
 /**
  *
@@ -21,43 +23,83 @@ import java.io.File;
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    ImagePanel panel;
+
     /** Creates new form MainFrame */
     public MainFrame() {
         initComponents();
         byte b = 2;
         int n = 3;
-        System.out.println(b+n);
-        ImagePanel panel = new ImagePanel();
+        System.out.println(b + n);
+        panel = new ImagePanel();
         this.setVisible(true);
         this.add(panel);
         panel.setImage(ImageHelper.openAsGrayscale(new File("testing/000010.jpg")));
         pack();
         repaint();
-        
+
         Background background = new Background();
-        
+
         File file[] = new File[200];
         StringBuilder builder = new StringBuilder();
-        
+
         for (int i = 0; i < 200; i++) {
             builder.delete(0, builder.length());
-            String numberStr = Integer.toString(i+1);
+            String numberStr = Integer.toString(i + 1);
 
             for (int j = 0; j < 6 - numberStr.length(); j++) {
                 builder.append(0);
             }
             builder.append(numberStr).append(".jpg");
-            
+
 
             file[i] = new File("background/" + builder.toString());
         }
-        
+
         background.processBackground(file);
-        
-        
+
+
         // Test Image
-        panel.setImage(background.getSubtraction(ImageHelper.openAsGrayscale(new File("testing/000150.jpg"))));
-        
+
+        ProcessTask task = new ProcessTask(background);
+        task.execute();
+
+    }
+
+    class ProcessTask extends SwingWorker {
+
+        Background background;
+
+        ProcessTask(Background bg) {
+            background = bg;
+        }
+
+        @Override
+        public Object doInBackground() {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < 200; i++) {
+                builder.delete(0, builder.length());
+                String numberStr = Integer.toString(i + 1);
+
+                for (int j = 0; j < 6 - numberStr.length(); j++) {
+                    builder.append(0);
+                }
+                builder.append(numberStr).append(".jpg");
+
+                System.out.println("Loading image... " + builder);
+//                background.getSubtraction(ImageHelper.openAsGrayscale(new File("testing/" + builder)));
+                panel.setImage(background.getSubtraction(ImageHelper.openAsGrayscale(new File("testing/" + builder))));
+                try {
+                    Thread.sleep(40);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                    
+                }
+                
+            }
+            System.out.println("DONE");
+            return null;
+        }
     }
 
     /** This method is called from within the constructor to
@@ -90,6 +132,10 @@ public class MainFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
+
+
+
                 }
             }
         } catch (ClassNotFoundException ex) {

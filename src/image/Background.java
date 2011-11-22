@@ -6,7 +6,6 @@ package image;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.File;
 
@@ -27,27 +26,52 @@ public class Background {
 
         return new BufferedImage(destCM, destCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight()), destCM.isAlphaPremultiplied(), null);
     }
+    BufferedImage newImage;
 
     public BufferedImage getSubtraction(BufferedImage image) {
-        BufferedImage newImage = createCompatibleDestImage(image, null);
-        
+        newImage = createCompatibleDestImage(image, null);
+
         int pixels[] = new int[ceiling];
         image.getRaster().getPixels(0, 0, w, h, pixels);
-
-        int ones = 0, zeros =0;
+        int ones = 0, zeros = 0;
         for (int i = 0; i < ceiling; i++) {
             double d = Math.abs(pixels[i] - mean[i]);
-            pixels[i] = (int) ((d > (3 * deviation[i]) )? 255 : 0);
+            pixels[i] = (int) ((d > (3 * deviation[i])) ? 255 : 0);
             if (pixels[i] == 0) {
                 zeros++;
             } else {
                 ones++;
             }
-            
-        }
-        System.out.println("ZEROS: " + zeros + "  AND ONES: " + ones);
 
-        
+        }
+
+
+        try {
+            for (int i = 0; i < ceiling; i++) {
+
+                if (pixels[i] != 0) {
+                    int count = 0;
+                    if (i > w) {
+                        count += (pixels[i - w] == 0) ? 0 : 1;
+                        count += (pixels[i - w - 1] == 0) ? 0 : 1;
+                        count += (pixels[i - w + 1] == 0) ? 0 : 1;
+                        count += (pixels[i - 1] == 0) ? 0 : 1;
+                        count += (pixels[i + 1] == 0) ? 0 : 1;
+                        count += (pixels[i + w - 1] == 0) ? 0 : 1;
+                        count += (pixels[i + w] == 0) ? 0 : 1;
+                        count += (pixels[i + w + 1] == 0) ? 0 : 1;
+
+                        if (count < 2) {
+                            pixels[i] = 0;
+                        }
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+        }
+
+
         WritableRaster raster = newImage.getRaster();
         raster.setPixels(0, 0, w, h, pixels);
         return newImage;
@@ -72,25 +96,22 @@ public class Background {
         int pixels[] = new int[ceiling];
         int totals[] = new int[ceiling];
         int totalsqr[] = new int[ceiling];
-        
+
         for (int i = 0; i < frames; i++) {
             images[i].getData().getPixels(0, 0, w, h, pixels);
             for (int j = 0; j < ceiling; j++) {
                 totals[j] += pixels[j];
-                totalsqr[j] += Math.pow(pixels[j],2);
-            }   
+                totalsqr[j] += Math.pow(pixels[j], 2);
+            }
         }
 
         mean = new double[ceiling];
         deviation = new double[ceiling];
         for (int i = 0; i < ceiling; i++) {
             mean[i] = totals[i] / frames;
-            deviation[i] = Math.max(Math.sqrt(totalsqr[i] / frames - Math.pow(mean[i], 2)), 0.34);
-
+            deviation[i] = Math.max(Math.sqrt((totalsqr[i] / frames) - Math.pow(mean[i], 2)), 0.34);
         }
 
         System.out.println("DONE!");
     }
-    
-    
 }
