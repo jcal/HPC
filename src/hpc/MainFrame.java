@@ -24,13 +24,16 @@ public class MainFrame extends javax.swing.JFrame {
     /** Creates new form MainFrame */
     public MainFrame() {
         initComponents();
+        byte b = 2;
+        int n = 3;
+        System.out.println(b+n);
         ImagePanel panel = new ImagePanel();
         this.setVisible(true);
-//        placeHolderPanel.add(panel);
         this.add(panel);
         panel.setImage(ImageHelper.openAsGrayscale(new File("testing/000010.jpg")));
         pack();
         repaint();
+        
         Background background = new Background();
         
         File file[] = new File[200];
@@ -51,6 +54,8 @@ public class MainFrame extends javax.swing.JFrame {
         
         background.processBackground(file);
         
+        
+        // Test Image
         panel.setImage(background.getSubtraction(ImageHelper.openAsGrayscale(new File("testing/000150.jpg"))));
         
     }

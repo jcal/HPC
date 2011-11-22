@@ -24,7 +24,7 @@ public class ImagePanel extends javax.swing.JPanel {
 
     /** Creates new form ImagePanel */
     public ImagePanel() {
-//        initComponents();
+
     }
 
     public void setImage(BufferedImage image) {
@@ -38,10 +38,6 @@ public class ImagePanel extends javax.swing.JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         g.drawImage(image, 0, 0, this.getSize().width, this.getSize().height, this); // see javadoc for more info on the parameters
-//        Color c=g.getColor();
-//      g.setColor(Color.RED);
-//      g.fillRect(0,0,this.getWidth(), this.getHeight());
-//      g.setColor(c);
 
     }
 

@@ -38,18 +38,4 @@ public class ImageHelper {
         return gray;
     }
 
-    public static int getTotal(BufferedImage gray) {
-        int ints[] = null;
-        int w = gray.getWidth();
-        int h = gray.getHeight();
-
-        ints = gray.getRaster().getPixels(0, 0, w, h, ints);
-
-        int total = 0;
-        for (int pixel : ints) {
-            total += pixel;
-        }
-        return total;
-        
-    }
 }
