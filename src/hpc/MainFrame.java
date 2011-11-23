@@ -39,21 +39,18 @@ public class MainFrame extends javax.swing.JFrame {
         repaint();
 
         Background background = new Background();
-
+        
         File file[] = new File[200];
-        StringBuilder builder = new StringBuilder();
-
+        StringBuilder builder = new StringBuilder(21);
+        builder.append("background/");
+        
         for (int i = 0; i < 200; i++) {
-            builder.delete(0, builder.length());
-            String numberStr = Integer.toString(i + 1);
+        	// index 11 is end of "background/"
+        	// index 21 is end of image file's name
+        	builder.delete(11, 21);
+            builder.append(String.format("%06d.jpg", i + 1));
 
-            for (int j = 0; j < 6 - numberStr.length(); j++) {
-                builder.append(0);
-            }
-            builder.append(numberStr).append(".jpg");
-
-
-            file[i] = new File("background/" + builder.toString());
+            file[i] = new File(builder.toString());
         }
 
         background.processBackground(file);
